@@ -1,0 +1,66 @@
+import tensorflow
+import scipy.io
+import os
+import cv2
+from PIL import Image,ImageDraw
+def read_get_image(cwd_path, type, lable):
+
+    path = "/" + lable + "/" + lable + "_"
+    mat_data = scipy.io.loadmat(cwd_path + path + type + ".mat")
+    detection = mat_data['detection']
+
+
+    if len(detection)!= 0:
+        print("前面的是x坐标后面的是y坐标")
+        # 对图片进行裁剪操作
+        # image_path = "/img1/img1.bmp"
+        #先获取该图片
+        image_path = "/" + lable + "/" + lable + ".bmp"
+
+        im = Image.open(cwd_path + image_path)
+        #print("图片宽度和高度分别是{}".format(img_size))
+
+        detection = tuple(detection)
+        a = 1
+        for i, j in detection:
+
+            print("当前的x,y坐标为", i, j)
+            region = im.crop((i - 75, j - 75, i + 50, j + 50))
+            # img1_epithelial_1.jpg
+            b = str(a)
+            test = lable + "_" + type +"_" + b + ".jpg"
+            region.save("C:/Users/admin/Desktop/task-wCSer/taskdata/CRCHistoPhenotypes_2016_04_28/C_save/"+type+"/"+test)
+            a = a + 1
+
+def get_count(k):
+    file_count = 0
+    for dirpath, dirnames, filenames in os.walk(k):
+        for dirname in dirnames:
+            file_count = file_count + 1
+
+    return file_count
+
+
+
+
+
+
+def main():
+    path = "C:/Users/admin/Desktop/task-wCSer/taskdata/CRCHistoPhenotypes_2016_04_28/Classification"
+    count = get_count(path)
+    print("当前文件夹下的子文件夹数目为",count)
+
+
+    for dirpath, dirnames, filenames in os.walk(path):
+        for dirname in dirnames:
+            read_get_image(path,'epithelial', dirname)
+            #read_get_image(path,'fibroblast',dirname)
+            #read_get_image(path,'inflammatory',dirname)
+            #read_get_image(path,'others',dirname)
+
+
+
+if __name__ == '__main__':
+    main()
+
+
